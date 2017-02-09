@@ -1,18 +1,31 @@
-#include <string>
-#include <algorithm>
 #include <iostream>
 
 #include <metacall/metacall.h>
 
 using namespace std;
 
-string complex_algorithm(const string & str)
+void * complex_algorithm(void * args[])
 {
-	string str_rev(str);
+	size_t length = metacall_value_size(args[0]) - 1;
 
-	reverse(str_rev.begin(), str_rev.end());
+	char * str = metacall_value_to_string(args[0]);
 
-	return str_rev;
+	size_t left = 0, right = length - 1;
+
+	while (left < right)
+	{
+		char old_left = str[left];
+
+		str[left] = str[right];
+
+		str[right] = old_left;
+
+		++left;
+
+		--right;
+	}
+
+	return metacall_value_create_string(str, length);
 }
 
 int main(int argc, char * argv[])
@@ -23,6 +36,14 @@ int main(int argc, char * argv[])
 
 		return 1;
 	}
+
+	if (metacall_register("complex_algorithm", &complex_algorithm, METACALL_STRING, 1, METACALL_STRING) != 0)
+	{
+		cout << "Invalid function register" << endl;
+
+		return 1;
+	}
+
 
 	return metacall_destroy();
 }
