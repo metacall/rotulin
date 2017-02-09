@@ -1,0 +1,34 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Build dir
+build*
+debug_build
+release_build
+/bin
+/lib
+/install
+
+# Local config windows
+_configure.bat
+_open-project.bat
+_start-cmake-gui.bat
+_start-cmd.bat
+
+# Local config unix
+.localconfig
+
+# Output directory (with configurations)
+output/*
+!output/*.json
