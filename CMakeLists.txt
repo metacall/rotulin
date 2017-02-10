@@ -66,7 +66,7 @@ execute_process(
 
 # Build frontend
 execute_process(
-	COMMAND ${PYTHON3_EXECUTABLE} frontend.py migrate
+	COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SCRIPTS_DIRECTORY}/frontend.py migrate
 )
 
 #
