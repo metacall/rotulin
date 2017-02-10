@@ -22,11 +22,37 @@ add_subdirectory(host)
 # Configure frontend
 # ...
 
-# Build frontend
-# ...
+
+# External dependencies
+find_package(PythonLibs 3 REQUIRED)
+
+if(NOT PYTHONLIBS_FOUND)
+	message(STATUS "Python libraries not found")
+	return()
+endif()
+
+set(Python_ADDITIONAL_VERSIONS 3.4)
+
+find_package(PythonInterp REQUIRED)
+
+if(NOT PYTHONINTERP_FOUND)
+	message(STATUS "Python interpreter not found")
+	return()
+endif()
 
 # Copy frontend
-# ...
+execute_process(
+	COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/frontend/frontend.py" "${PROJECT_SCRIPTS_DIRECTORY}"
+)
+
+execute_process(
+	COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/frontend/frontend" "${PROJECT_SCRIPTS_DIRECTORY}/frontend"
+)
+
+# Build frontend
+execute_process(
+	COMMAND ${PYTHON3_EXECUTABLE} frontend.py migrate
+)
 
 #
 # Cache

@@ -3,7 +3,7 @@
 import os
 import sys
 
-def frontend_initialize(port: int) -> int:
+def frontend_execute(args):
 	os.environ.setdefault("DJANGO_SETTINGS_MODULE", "frontend.settings");
 
 	try:
@@ -23,9 +23,14 @@ def frontend_initialize(port: int) -> int:
 			);
 		raise
 
-	execute_from_command_line([ os.path.basename(__file__), 'runserver', str(port) ]);
+	execute_from_command_line(args);
+
+
+
+def frontend_initialize(port: int) -> int:
+	frontend_execute([os.path.basename(__file__), 'runserver', str(port)]);
 
 	return 0;
 
 if __name__ == "__main__":
-	frontend_initialize(8000);
+	frontend_execute(sys.argv);

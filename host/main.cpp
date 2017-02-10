@@ -28,39 +28,8 @@ void * complex_algorithm(void * args[])
 	return metacall_value_create_string(str, length);
 }
 
-int main(int argc, char * argv[])
+void rb_test(void)
 {
-	const char * rb_scripts[] =
-	{
-		"cache.rb"
-	};
-
-	/* Initialize MetaCall */
-	if (metacall_initialize() != 0)
-	{
-		cout << "Error initializing metacall" << endl;
-
-		return 1;
-	}
-
-	/* Register complex algorithm into MetaCall */
-	if (metacall_register("complex_algorithm", &complex_algorithm, METACALL_STRING, 1, METACALL_STRING) != 0)
-	{
-		cout << "Invalid function register" << endl;
-
-		return 1;
-	}
-
-	if (metacall_load_from_file("rb", rb_scripts, sizeof(rb_scripts) / sizeof(rb_scripts[0])) != 0)
-	{
-		cout << "Invalid ruby script load" << endl;
-
-		return 1;
-	}
-
-	/* Initialize ruby cache */
-	metacall("cache_initialize");
-
 	/* Test */
 	{
 		const char key[] = "hello";
@@ -102,7 +71,67 @@ int main(int argc, char * argv[])
 			cout << "Invalid get" << endl;
 		}
 	}
+}
 
+int main(int argc, char * argv[])
+{
+	const char * rb_scripts[] =
+	{
+		"cache.rb"
+	};
+
+	const char * py_scripts[] =
+	{
+		"frontend.py"
+	};
+
+	/* Initialize MetaCall */
+	if (metacall_initialize() != 0)
+	{
+		cout << "Error initializing metacall" << endl;
+
+		return 1;
+	}
+
+	/* Register complex algorithm into MetaCall */
+	if (metacall_register("complex_algorithm", &complex_algorithm, METACALL_STRING, 1, METACALL_STRING) != 0)
+	{
+		cout << "Invalid function register" << endl;
+
+		return 1;
+	}
+
+	/* Load ruby script */
+	if (metacall_load_from_file("rb", rb_scripts, sizeof(rb_scripts) / sizeof(rb_scripts[0])) != 0)
+	{
+		cout << "Invalid ruby script load" << endl;
+
+		return 1;
+	}
+
+	/* Initialize ruby cache */
+	metacall("cache_initialize");
+
+	/* Ruby test */
+	/* rb_test(); */
+
+	/* Load python script */
+	if (metacall_load_from_file("py", py_scripts, sizeof(py_scripts) / sizeof(py_scripts[0])) != 0)
+	{
+		cout << "Invalid python script load" << endl;
+
+		return 1;
+	}
+
+	/* Initialize python frontend */
+	void * result = metacall("frontend_initialize", 9000);
+
+	if (result != NULL)
+	{
+		/* ... */
+
+		metacall_value_destroy(result);
+	}
 
 	return metacall_destroy();
 }
