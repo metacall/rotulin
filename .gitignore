@@ -31,4 +31,3 @@ _start-cmd.bat
 
 # Output directory (with configurations)
 output/*
-!output/*.json

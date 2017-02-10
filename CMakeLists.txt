@@ -5,8 +5,23 @@ project(Rotulin)
 # Define output directory
 set(PROJECT_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/output")
 
+execute_process(
+	COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_OUTPUT_DIRECTORY}"
+)
+
 # Define scripts directory
-set(PROJECT_SCRIPTS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/output/scripts")
+set(PROJECT_SCRIPTS_DIRECTORY "${PROJECT_OUTPUT_DIRECTORY}/scripts")
+
+execute_process(
+	COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SCRIPTS_DIRECTORY}"
+)
+
+# Define configurations directory
+set(PROJECT_CONFIGURATIONS_DIRECTORY "${PROJECT_OUTPUT_DIRECTORY}/configurations")
+
+execute_process(
+	COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SCRIPTS_DIRECTORY}"
+)
 
 #
 # Host
@@ -82,3 +97,11 @@ execute_process(
 # Copy image
 # ...
 
+#
+# Configurations
+#
+
+# Global configuration
+execute_process(
+	COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/configurations/global.json" "${PROJECT_CONFIGURATIONS_DIRECTORY}"
+)
