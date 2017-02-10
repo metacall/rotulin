@@ -20,7 +20,7 @@ execute_process(
 set(PROJECT_CONFIGURATIONS_DIRECTORY "${PROJECT_OUTPUT_DIRECTORY}/configurations")
 
 execute_process(
-	COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SCRIPTS_DIRECTORY}"
+	COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_CONFIGURATIONS_DIRECTORY}"
 )
 
 #
