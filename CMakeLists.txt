@@ -70,7 +70,7 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/migrate")
 		COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SCRIPTS_DIRECTORY}/frontend.py migrate
 	)
 
-	file(WRITE "" "${CMAKE_CURRENT_BINARY_DIR}/migrate")
+	file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/migrate" "")
 endif()
 
 #
