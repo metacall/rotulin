@@ -65,9 +65,13 @@ execute_process(
 )
 
 # Build frontend
-execute_process(
-	COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SCRIPTS_DIRECTORY}/frontend.py migrate
-)
+if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/migrate")
+	execute_process(
+		COMMAND ${PYTHON_EXECUTABLE} ${PROJECT_SCRIPTS_DIRECTORY}/frontend.py migrate
+	)
+
+	file(WRITE "" "${CMAKE_CURRENT_BINARY_DIR}/migrate")
+endif()
 
 #
 # Cache

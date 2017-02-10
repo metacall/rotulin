@@ -132,6 +132,10 @@ int main(int argc, char * argv[])
 
 		metacall_value_destroy(result);
 	}
+	else
+	{
+		cout << "Invalid frontend initialization" << endl;
+	}
 
 	return metacall_destroy();
 }
