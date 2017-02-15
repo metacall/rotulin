@@ -5,7 +5,10 @@
     "emitEntryPoint": true
   },
   "dependencies": {
-    "CoreCompat.System.Drawing": "1.0.0-beta006"
+    "ImageSharp": "1.0.0-alpha2-00058",
+    "ImageSharp.Drawing": "1.0.0-alpha2-00058",
+    "ImageSharp.Formats.Jpeg": "1.0.0-alpha2-00058",
+    "ImageSharp.Formats.Png": "1.0.0-alpha2-00054"
   },
   "frameworks": {
     "netcoreapp1.1": {

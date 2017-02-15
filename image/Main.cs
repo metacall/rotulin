@@ -6,7 +6,9 @@ namespace ImageLib
     {
         public static void Main(string[] args)
         {
-            ImageLib.ImageMaker.MakeImage("hola");
+            if(ImageLib.ImageMaker.StartImageServer("/tmp/water.jpg")){
+                Console.WriteLine( ImageLib.ImageMaker.MakeImage("/tmp/image.jpg"));
+            }
         }
     }
 }

@@ -4,6 +4,38 @@
 
 using namespace std;
 
+#include <stdio.h> 
+
+#ifdef WINDOWS
+
+#include <windows.h>
+
+string getexepath()
+{
+  char result[ MAX_PATH ];
+  return string( result, GetModuleFileName( NULL, result, MAX_PATH ) );
+}
+
+#else
+
+#include <limits.h>
+#include <unistd.h>
+
+string getexepath()
+{
+  char result[ PATH_MAX ];
+  ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
+  return string( result, (count > 0) ? count : 0 );
+}
+#endif
+
+string get_current_path(){
+	string full_path = getexepath();
+	
+	string::size_type pos = string( full_path ).find_last_of( "\\/" );
+    return string( full_path ).substr( 0, pos);
+}
+
 void * complex_algorithm(void * args[])
 {
 	size_t length = metacall_value_size(args[0]) - 1;
@@ -75,6 +107,16 @@ void rb_test(void)
 
 int main(int argc, char * argv[])
 {
+	char * watermark_file;
+
+	if(argc != 2){
+		printf("Usage: <full-image-path>\n");
+		return 1;
+	}else{
+		watermark_file = argv[1];
+		printf("Using %s as watermark image\n",watermark_file);
+	}
+
 	const char * rb_scripts[] =
 	{
 		"cache.rb"
@@ -85,6 +127,8 @@ int main(int argc, char * argv[])
 		"frontend.py"
 	};
 
+	string cs_package = get_current_path().append("/scripts/image.dll");
+	
 	/* Initialize MetaCall */
 	if (metacall_initialize() != 0)
 	{
@@ -111,10 +155,43 @@ int main(int argc, char * argv[])
 
 	/* Initialize ruby cache */
 	metacall("cache_initialize");
-
+	
 	/* Ruby test */
 	/* rb_test(); */
 
+	if (metacall_load_from_package("cs", cs_package.c_str()) != 0){
+		cout << "Invalid cs package load" << endl;
+		
+		return 1;
+	}
+	
+	void * image_server_status = NULL;
+	
+	image_server_status = metacall("StartImageServer",watermark_file);
+	
+	if(image_server_status==NULL){
+		cout << "StartImageServer error" << endl;
+	
+		return 1;
+	}else{
+		bool status = metacall_value_to_bool(image_server_status);
+		
+		metacall_value_destroy(image_server_status);
+		
+		if(status){
+		
+			cout << "Image Server start!" << endl;
+			
+			/* metacall("MakeImage","/tmp/image.jpg");*/
+		
+		}else{
+		
+			cout << "Image Server start error!" << endl;
+	
+			return 1;
+		}
+	}
+	
 	/* Load python script */
 	if (metacall_load_from_file("py", py_scripts, sizeof(py_scripts) / sizeof(py_scripts[0])) != 0)
 	{

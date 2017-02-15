@@ -1,28 +1,43 @@
 ﻿using System;
-using System.Drawing;
+using System.IO;
+using ImageSharp;
+
+using ImageSharp.Formats;
+using ImageSharp.Processing;
+using ImageSharp.Colors;
+using ImageSharp.Quantizers;
+using ImageSharp.Drawing;
 
 namespace ImageLib
 {
     public class ImageMaker
     {
-        public static string MakeImage(string text)
+        private static Image waterMark = null;
+
+        public static bool StartImageServer(string waterMarkImagePath ){
+            return SetWaterMark(waterMarkImagePath);
+        }
+
+        private static bool SetWaterMark(string path){
+            try {
+                waterMark= new Image(path);
+            } catch {
+                return false;
+            }
+            return true;
+        }
+
+
+        public static string MakeImage(string path)
         {
-            using (Bitmap img = new Bitmap(100, 50))
-            {
-                using (Graphics grh = Graphics.FromImage(img))
-                {
-                    using (var font = new Font("Arial", 8))
-                    {
-                        grh.DrawString(text, font, Brushes.Red, 0, 0);
-                    }
-                }
-                var fileName = System.IO.Path.GetRandomFileName() + ".png";
+            var fileName = System.IO.Path.GetRandomFileName() + ".png";
 
-                img.Save(fileName, System.Drawing.Imaging.ImageFormat.Png);
-
+            using(var image = new Image(path)){
+                image.Blend(waterMark);
+                image.Save(fileName);
             }
 
-            return string.Empty;
+            return fileName;
         }
     }
 }
