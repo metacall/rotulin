@@ -61,7 +61,7 @@ execute_process(
 )
 
 execute_process(
-	COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/frontend/frontend" "${PROJECT_SCRIPTS_DIRECTORY}/frontend"
+	COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/frontend/web" "${PROJECT_SCRIPTS_DIRECTORY}/web"
 )
 
 # Build frontend

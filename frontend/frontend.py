@@ -4,7 +4,7 @@ import os
 import sys
 
 def frontend_execute(args):
-	os.environ.setdefault("DJANGO_SETTINGS_MODULE", "frontend.settings");
+	os.environ.setdefault("DJANGO_SETTINGS_MODULE", "web.settings");
 
 	try:
 		from django.core.management import execute_from_command_line
@@ -22,13 +22,13 @@ def frontend_execute(args):
 				"forget to activate a virtual environment?"
 			);
 		raise
-
-	execute_from_command_line(args);
+	sys.argv = args;
+	execute_from_command_line(sys.argv);
 
 
 
 def frontend_initialize(port: int) -> int:
-	frontend_execute([os.path.basename(__file__), 'runserver', str(port)]);
+	frontend_execute([os.path.abspath(__file__), 'runserver', str(port)]);
 
 	return 0;
 
