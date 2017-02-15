@@ -1,9 +1,15 @@
-#include <iostream>
+#define cimg_display 0
+#define cimg_use_jpeg
+#define cimg_use_png
+#include "cimg/CImg.h"
 
+#include <iostream>
+#include <cstdio>
 #include <metacall/metacall.h>
 
-using namespace std;
 
+using namespace std;
+using namespace cimg_library;
 #include <stdio.h> 
 
 #ifdef WINDOWS
@@ -105,6 +111,18 @@ void rb_test(void)
 	}
 }
 
+CImg<unsigned char> cimg_water_mark;
+
+string blend_image(char * image){
+	 CImg<unsigned char> tmp_img(image);
+	 tmp_img.draw_image(0,0,cimg_water_mark,0.5f);
+
+	string output_name = std::tmpnam(NULL);
+	output_name = output_name.append(".jpg");
+	tmp_img.save(output_name.c_str());
+	return output_name;
+}
+
 int main(int argc, char * argv[])
 {
 	char * watermark_file;
@@ -123,6 +141,7 @@ int main(int argc, char * argv[])
 
 		watermark_file = argv[2];
 		printf("port:%d\nwatermark image:%s\n",port, watermark_file);
+		//cimg_water_mark.load(watermark_file);
 	}
 
 	const char * rb_scripts[] =
