@@ -108,13 +108,21 @@ void rb_test(void)
 int main(int argc, char * argv[])
 {
 	char * watermark_file;
+	int port = 0;
 
-	if(argc != 2){
-		printf("Usage: <full-image-path>\n");
+	if(argc != 3){
+		printf("Usage: <server-port> <full-image-path>\n");
 		return 1;
 	}else{
-		watermark_file = argv[1];
-		printf("Using %s as watermark image\n",watermark_file);
+		port = atoi(argv[1]);
+
+		if(port<=0){
+			printf("invalid port %d\n",port);
+			return 1;
+		}
+
+		watermark_file = argv[2];
+		printf("port:%d\nwatermark image:%s\n",port, watermark_file);
 	}
 
 	const char * rb_scripts[] =
@@ -201,7 +209,7 @@ int main(int argc, char * argv[])
 	}
 
 	/* Initialize python frontend */
-	void * result = metacall("frontend_initialize", 9000);
+	void * result = metacall("frontend_initialize", port);
 
 	if (result != NULL)
 	{
