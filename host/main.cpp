@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <metacall/metacall.h>
 
+#define NATIVE_CACHE
 
 using namespace std;
 using namespace cimg_library;
@@ -40,6 +41,54 @@ string get_current_path(){
 	
 	string::size_type pos = string( full_path ).find_last_of( "\\/" );
     return string( full_path ).substr( 0, pos);
+}
+
+/* stubs */
+#ifdef NATIVE_CACHE
+char c_cache_key[0xFF]="";
+char c_cache_value[0xFF]="";
+void * c_cache_get(void * args[])
+{
+	if(strcmp(c_cache_key,(char *)args[0])==0)
+	{
+		return metacall_value_create_string(c_cache_value, strlen(c_cache_value));
+	}
+
+	return metacall_value_create_string(" ", 1);
+}
+
+void * c_cache_set(void * args[])
+{
+	strcpy(c_cache_key,(char * ) args[0]);
+	strcpy(c_cache_value,(char * ) args[1]);
+	return  metacall_value_create_bool(true);
+}
+#endif
+
+void * get_image(void * args[])
+{
+	char * id;
+	char * image_path;
+	id= (char *)args[0];
+	image_path= (char *)args[1];
+
+	void * cached_path = metacall("cache_get",id);
+
+	if(cached_path){
+		char * cache_path = metacall_value_to_string(cached_path);
+		if(cache_path[0] ==' '){
+			cout << "Making image!" << endl;
+			cached_path = metacall("MakeImage",image_path);
+			cache_path = metacall_value_to_string(cached_path);
+			metacall("cache_set",id,cache_path);
+		}else{
+			cout << "Image from cache!" << endl;
+		}
+	}else{
+		cout << "error calling cache_get" << endl;
+	}
+
+	return cached_path;
 }
 
 void * complex_algorithm(void * args[])
@@ -171,7 +220,27 @@ int main(int argc, char * argv[])
 
 		return 1;
 	}
+	if (metacall_register("get_image", &get_image, METACALL_STRING, 2, METACALL_STRING,METACALL_STRING) != 0)
+	{
+		cout << "Invalid function register" << endl;
 
+		return 1;
+	}
+#ifdef NATIVE_CACHE
+	if (metacall_register("cache_set", &c_cache_set, METACALL_BOOL, 2, METACALL_STRING, METACALL_STRING) != 0)
+	{
+		cout << "Invalid function register" << endl;
+
+		return 1;
+	}
+
+	if (metacall_register("cache_get", &c_cache_get, METACALL_STRING, 1, METACALL_STRING) != 0)
+	{
+		cout << "Invalid function register" << endl;
+
+		return 1;
+	}
+#else
 	/* Load ruby script */
 	if (metacall_load_from_file("rb", rb_scripts, sizeof(rb_scripts) / sizeof(rb_scripts[0])) != 0)
 	{
@@ -179,10 +248,10 @@ int main(int argc, char * argv[])
 
 		return 1;
 	}
-
 	/* Initialize ruby cache */
 	metacall("cache_initialize");
-	
+#endif
+
 	/* Ruby test */
 	/* rb_test(); */
 
@@ -218,7 +287,27 @@ int main(int argc, char * argv[])
 			return 1;
 		}
 	}
-	
+	/* Test */
+	/*
+	void * vpath = metacall("get_image","comida","/tmp/image.jpg");
+
+	char * image_path;
+	if(vpath){
+		image_path= metacall_value_to_string(vpath);
+		cout << image_path << endl;
+		metacall_value_destroy(vpath);
+	}
+
+	vpath = metacall("get_image","comida","/tmp/image.jpg");
+
+	if(vpath){
+		 image_path= metacall_value_to_string(vpath);
+		cout << image_path << endl;
+		metacall_value_destroy(vpath);
+	}
+
+	return 0;
+	*/
 	/* Load python script */
 	if (metacall_load_from_file("py", py_scripts, sizeof(py_scripts) / sizeof(py_scripts[0])) != 0)
 	{
