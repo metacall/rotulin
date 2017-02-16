@@ -8,6 +8,7 @@
 #include <metacall/metacall.h>
 
 #define NATIVE_CACHE
+#define NATIVE_IMAGE
 
 using namespace std;
 using namespace cimg_library;
@@ -159,19 +160,27 @@ void rb_test(void)
 		}
 	}
 }
-
+#ifdef NATIVE_IMAGE
 CImg<unsigned char> cimg_water_mark;
 
-string blend_image(char * image){
+void * image_start(void * args[]){
+	char * image= (char *) args[0];
+	cimg_water_mark.load(image);
+	return metacall_value_create_bool(true);
+}
+
+void * blend_image(void * args[]){
+	char * image= (char *) args[0];
+
 	 CImg<unsigned char> tmp_img(image);
 	 tmp_img.draw_image(0,0,cimg_water_mark,0.5f);
 
 	string output_name = std::tmpnam(NULL);
 	output_name = output_name.append(".jpg");
 	tmp_img.save(output_name.c_str());
-	return output_name;
+	return metacall_value_create_string(output_name.c_str(),output_name.length());
 }
-
+#endif
 int main(int argc, char * argv[])
 {
 	char * watermark_file;
@@ -190,7 +199,6 @@ int main(int argc, char * argv[])
 
 		watermark_file = argv[2];
 		printf("port:%d\nwatermark image:%s\n",port, watermark_file);
-		//cimg_water_mark.load(watermark_file);
 	}
 
 	const char * rb_scripts[] =
@@ -226,6 +234,22 @@ int main(int argc, char * argv[])
 
 		return 1;
 	}
+#ifdef NATIVE_IMAGE
+	if (metacall_register("StartImageServer", &image_start, METACALL_BOOL, 1, METACALL_STRING) != 0)
+	{
+		cout << "Invalid function register" << endl;
+
+		return 1;
+	}
+	
+	if (metacall_register("MakeImage", &blend_image, METACALL_STRING, 1, METACALL_STRING) != 0)
+	{
+		cout << "Invalid function register" << endl;
+
+		return 1;
+	}
+#endif
+
 #ifdef NATIVE_CACHE
 	if (metacall_register("cache_set", &c_cache_set, METACALL_BOOL, 2, METACALL_STRING, METACALL_STRING) != 0)
 	{
@@ -254,13 +278,13 @@ int main(int argc, char * argv[])
 
 	/* Ruby test */
 	/* rb_test(); */
-
+#ifndef NATIVE_IMAGE
 	if (metacall_load_from_package("cs", cs_package.c_str()) != 0){
 		cout << "Invalid cs package load" << endl;
 		
 		return 1;
 	}
-	
+#endif
 	void * image_server_status = NULL;
 	
 	image_server_status = metacall("StartImageServer",watermark_file);
@@ -288,7 +312,7 @@ int main(int argc, char * argv[])
 		}
 	}
 	/* Test */
-	/*
+	
 	void * vpath = metacall("get_image","comida","/tmp/image.jpg");
 
 	char * image_path;
@@ -307,7 +331,7 @@ int main(int argc, char * argv[])
 	}
 
 	return 0;
-	*/
+	
 	/* Load python script */
 	if (metacall_load_from_file("py", py_scripts, sizeof(py_scripts) / sizeof(py_scripts[0])) != 0)
 	{
