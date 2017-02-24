@@ -1,18 +1,21 @@
-#define cimg_display 0
-#define cimg_use_jpeg
-#define cimg_use_png
-#include "cimg/CImg.h"
-
 #include <iostream>
 #include <cstdio>
 #include <metacall/metacall.h>
 
-#define NATIVE_CACHE
-#define NATIVE_IMAGE
+/*#define NATIVE_CACHE*/
+/*#define NATIVE_IMAGE*/
+
+#if defined(NATIVE_IMAGE)
+#	define cimg_display 0
+#	define cimg_use_jpeg
+#	define cimg_use_png
+#	include "cimg/CImg.h"
+
+	using namespace cimg_library;
+#endif
 
 using namespace std;
-using namespace cimg_library;
-#include <stdio.h> 
+#include <stdio.h>
 
 #ifdef WINDOWS
 
@@ -39,7 +42,6 @@ string getexepath()
 
 string get_current_path(){
 	string full_path = getexepath();
-	
 	string::size_type pos = string( full_path ).find_last_of( "\\/" );
     return string( full_path ).substr( 0, pos);
 }
@@ -212,7 +214,7 @@ int main(int argc, char * argv[])
 	};
 
 	string cs_package = get_current_path().append("/scripts/image.dll");
-	
+
 	/* Initialize MetaCall */
 	if (metacall_initialize() != 0)
 	{
@@ -313,7 +315,7 @@ int main(int argc, char * argv[])
 	}
 	/* Test */
 	
-	void * vpath = metacall("get_image","comida","/tmp/image.jpg");
+	void * vpath = metacall("get_image","comida","../data/lena.png");
 
 	char * image_path;
 	if(vpath){
@@ -322,7 +324,7 @@ int main(int argc, char * argv[])
 		metacall_value_destroy(vpath);
 	}
 
-	vpath = metacall("get_image","comida","/tmp/image.jpg");
+	vpath = metacall("get_image","comida","../data/lena.png");
 
 	if(vpath){
 		 image_path= metacall_value_to_string(vpath);

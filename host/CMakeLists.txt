@@ -45,11 +45,11 @@ target_include_directories(${target}
 
 target_link_libraries(${target}
 	PRIVATE
-	${METACALL_LIBRARIES} # MetaCall libraries,
+	${METACALL_LIBRARIES} # MetaCall libraries
 
-	pthread
-	jpeg
-	png
+	#pthread
+	#jpeg
+	#png
 )
 
 #
