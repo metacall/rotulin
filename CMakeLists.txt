@@ -96,6 +96,10 @@ execute_process(
 # ...
 
 # Build image
+execute_process(
+	COMMAND dotnet restore "${CMAKE_CURRENT_SOURCE_DIR}/image/"
+	COMMAND dotnet publish "${CMAKE_CURRENT_SOURCE_DIR}/image/" -o ${PROJECT_SCRIPTS_DIRECTORY}
+)
 # ...
 
 # Copy image
