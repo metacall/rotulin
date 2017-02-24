@@ -16,7 +16,7 @@
 
 using namespace std;
 #include <stdio.h>
-
+#include <string.h>
 #ifdef WINDOWS
 
 #include <windows.h>
@@ -314,22 +314,35 @@ int main(int argc, char * argv[])
 		}
 	}
 	/* Test */
-	
+	string first_call_result;
+	string second_call_result;
+
+	/* first call, should make image and save in cache*/
 	void * vpath = metacall("get_image","comida","../data/lena.png");
 
 	char * image_path;
+
 	if(vpath){
 		image_path= metacall_value_to_string(vpath);
 		cout << image_path << endl;
+		first_call_result.append(image_path);
 		metacall_value_destroy(vpath);
 	}
 
+	/* second call, should take image from cache*/
 	vpath = metacall("get_image","comida","../data/lena.png");
 
 	if(vpath){
-		 image_path= metacall_value_to_string(vpath);
+		image_path= metacall_value_to_string(vpath);
 		cout << image_path << endl;
+		second_call_result.append(image_path);
 		metacall_value_destroy(vpath);
+	}
+	
+	if(first_call_result == second_call_result){
+		cout << "image from cache" << endl;
+	}else{
+		cout << "new image" << endl;
 	}
 
 	return 0;
