@@ -29,6 +29,13 @@ def list(request):
 
 			print('Result: ' + str(result));
 
+			if metacall('cache_has_key', newdoc.docfile.name) == True:
+				print('File found in cache');
+				#metacall('
+			else:
+				print('File not found in cache');
+				#metacall('
+
 			newdoc.save();
 
 			# Redirect to the document list after POST
