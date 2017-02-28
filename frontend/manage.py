@@ -3,8 +3,12 @@
 import os
 import sys
 
+import metacall
+from _py_portd import metacall_initialize
+#from _py_port import metacall_initialize
+
 def frontend_execute(args):
-	os.environ.setdefault("DJANGO_SETTINGS_MODULE", "web.settings");
+	os.environ.setdefault("DJANGO_SETTINGS_MODULE", "frontend.settings");
 
 	try:
 		from django.core.management import execute_from_command_line
@@ -22,12 +26,16 @@ def frontend_execute(args):
 				"forget to activate a virtual environment?"
 			);
 		raise
+
+	if metacall_initialize() != 0:
+		raise Exception('Invalid metacall initialization');
+
 	sys.argv = args;
+
 	execute_from_command_line(sys.argv);
 
 
-
-def frontend_initialize(port: int) -> int:
+def frontend_run(port: int) -> int:
 	frontend_execute([os.path.abspath(__file__), 'runserver', str(port)]);
 
 	return 0;

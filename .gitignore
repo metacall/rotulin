@@ -28,6 +28,3 @@ _start-cmd.bat
 
 # Local config unix
 .localconfig
-
-# Output directory (with configurations)
-output/*
