@@ -11,14 +11,6 @@ int main(int argc, char * argv[])
 	{
 		cerr << "Error initializing rotulin" << endl;
 
-		return 1;
-	}
-
-	/* Load all scripts */
-	if (rotulin_load_scripts() != 0)
-	{
-		cerr << "Error loading rotulin scripts" << endl;
-
 		return rotulin_destroy();
 	}
 

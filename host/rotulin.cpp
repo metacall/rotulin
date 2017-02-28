@@ -5,6 +5,11 @@
 
 using namespace std;
 
+/**
+ * @brief Load all scripts for rotulin
+ */
+static int rotulin_load_scripts(void);
+
 int rotulin_initialize()
 {
 	/* Initialize MetaCall */
@@ -15,29 +20,47 @@ int rotulin_initialize()
 		return 1;
 	}
 
-	return 0;
+	return rotulin_load_scripts();
 }
 
 int rotulin_load_scripts()
 {
 	const size_t files_max_size = 3;
 
+	enum script_id
+	{
+		files,
+		package
+	};
+
 	struct
 	{
 		const char * tag;
 		const char * files[files_max_size];
 		size_t size;
+		script_id id;
 	}
 	scripts[] =
 	{
-		{ "rb", { "cache.rb" }, 1 },
-		{ "py", { "manage.py" }, 1 }/*,
-		{ "cs", { "image.cs", 1 } }*/
+		{ "rb", { "cache.rb" }, 1, files },
+		{ "py", { "manage.py" }, 1, files },
+		{ "cs", { "image.dll" }, 1, package }
 	};
 
 	for (auto script : scripts)
 	{
-		if (metacall_load_from_file(script.tag, script.files, script.size) != 0)
+		int result;
+
+		if (script.id == files)
+		{
+			result = metacall_load_from_file(script.tag, script.files, script.size);
+		}
+		else
+		{
+			result = metacall_load_from_package(script.tag, script.files[0]);
+		}
+
+		if (result != 0)
 		{
 			cerr << "Invalid MetaCall file loading: " << script.tag << ", " << script.files[0] << " ..." << endl;
 
